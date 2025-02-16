@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+    container_name: vdot_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: vdotdb
+      POSTGRES_USER: vdotuser
+      POSTGRES_PASSWORD: password
+
+  backend:
+    container_name: vdot_backend
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    # command: sleep infinity  # Djangoプロジェクト作成後に `python manage.py runserver` に変更
+    command: sh -c "cd /vdot && python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ../:/vdot  # `vdot/` をコンテナの `/vdot` にマウント
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ../secrets/.env.dev
+
+volumes:
+  postgres_data:
