@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # アプリケーション
-    'app.users',
+    'app.accounts',
 ]
 
 MIDDLEWARE = [
@@ -216,23 +216,23 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
     # カスタムユーザー用シリアライザー
     "SERIALIZERS": {
-        "user_create": "app.users.serializers.UserSerializer",
-        "user": "app.users.serializers.UserSerializer",
-        "current_user": "app.users.serializers.UserSerializer",
+        "user_create": "app.accounts.serializers.UserSerializer",
+        "user": "app.accounts.serializers.UserSerializer",
+        "current_user": "app.accounts.serializers.UserSerializer",
     },
     "EMAIL": {
         # アカウント本登録
-        "activation": "app.users.email.ActivationEmail",
+        "activation": "app.accounts.email.ActivationEmail",
         # アカウント本登録完了
-        "confirmation": "app.users.email.ConfirmationEmail",
+        "confirmation": "app.accounts.email.ConfirmationEmail",
         # パスワード再設定
-        "password_reset": "app.users.email.ForgotPasswordEmail",
+        "password_reset": "app.accounts.email.ForgotPasswordEmail",
         # パスワード再設定確認
-        "password_changed_confirmation": "app.users.email.ResetPasswordEmail",
+        "password_changed_confirmation": "app.accounts.email.ResetPasswordEmail",
     },
 }
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'accounts.User'
 
 # サイト設定
 SITE_DOMAIN = env("SITE_DOMAIN")

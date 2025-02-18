@@ -4,5 +4,5 @@ urlpatterns = [
     path("api/auth/", include("djoser.urls")),
     path("api/auth/", include("djoser.urls.jwt")),
     # アカウント
-    path("api/", include("app.users.urls")),
+    path("api/", include("app.accounts.urls")),
 ]
