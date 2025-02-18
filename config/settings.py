@@ -14,6 +14,7 @@ from pathlib import Path
 import environ
 env = environ.Env()
 import os
+from datetime import timedelta
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -53,7 +54,9 @@ INSTALLED_APPS = [
 
     # Django REST Framework & JWT
     'rest_framework',
-    'rest_framework_simplejwt',
+    'rest_framework_simplejwt', # いらないかも
+    #  "rest_framework.authtoken",
+    "djoser",   
     'corsheaders',
 
     # アプリケーション
@@ -61,6 +64,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware", # 追加
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -69,6 +73,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+# 本番環境では、CORS_ALLOWED_ORIGINSを指定する
+# CORS_ALLOWED_ORIGINS = []
 
 ROOT_URLCONF = 'config.urls'
 
@@ -145,3 +153,87 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# メール設定
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = 587
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+
+# Rest Framework設定
+REST_FRAMEWORK = {
+    # 認証が必要
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+    # JWT認証
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+    # 日付
+    "DATETIME_FORMAT": "%Y/%m/%d %H:%M",
+}
+
+# JWT設定
+SIMPLE_JWT = {
+    # アクセストークン(1日)
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    # リフレッシュトークン(5日)
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
+    # 認証タイプ
+    "AUTH_HEADER_TYPES": ("JWT",),
+    # 認証トークン
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+}
+
+# Djoser設定
+DJOSER = {
+    # TOKEN_MODELをNoneにしないとhttp://localhost:8000/api/auth/users/me/のDELETEメソッド500エラーが出る。
+    "TOKEN_MODEL": None,  # JWTのみを使う場合はこれを追加
+    # メールアドレスでログイン
+    "LOGIN_FIELD": "email",
+    # アカウント本登録メール
+    "SEND_ACTIVATION_EMAIL": True,
+    # アカウント本登録完了メール
+    "SEND_CONFIRMATION_EMAIL": True,
+    # メールアドレス変更完了メール
+    "USERNAME_CHANGED_EMAIL_CONFIRMATION": True,
+    # パスワード変更完了メール
+    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+    # アカウント登録時に確認用パスワード必須
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    # メールアドレス変更時に確認用メールアドレス必須
+    "SET_USERNAME_RETYPE": True,
+    # パスワード変更時に確認用パスワード必須
+    "SET_PASSWORD_RETYPE": True,
+    # アカウント本登録用URL
+    # activate/{uuid}/{token}の間違い？
+    "ACTIVATION_URL": "signup/{uid}/{token}",
+    # パスワードリセット完了用URL
+    "PASSWORD_RESET_CONFIRM_URL": "reset-password/{uid}/{token}",
+    # カスタムユーザー用シリアライザー
+    "SERIALIZERS": {
+        "user_create": "app.users.serializers.UserSerializer",
+        "user": "app.users.serializers.UserSerializer",
+        "current_user": "app.users.serializers.UserSerializer",
+    },
+    "EMAIL": {
+        # アカウント本登録
+        "activation": "app.users.email.ActivationEmail",
+        # アカウント本登録完了
+        "confirmation": "app.users.email.ConfirmationEmail",
+        # パスワード再設定
+        "password_reset": "app.users.email.ForgotPasswordEmail",
+        # パスワード再設定確認
+        "password_changed_confirmation": "app.users.email.ResetPasswordEmail",
+    },
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+# サイト設定
+SITE_DOMAIN = env("SITE_DOMAIN")
+SITE_NAME = env("SITE_NAME")

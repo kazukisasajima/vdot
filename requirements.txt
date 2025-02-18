@@ -4,3 +4,5 @@ django-environ>=0.8.1  # 環境変数の管理に使用
 django-cors-headers>=3.10.0  # CORSヘッダーの管理に使用
 djangorestframework>=3.13.1  # Django REST frameworkの互換バージョン
 djangorestframework-simplejwt>=5.0.0  # JWT認証に使用
+PyJWT==2.8.0
+djoser==2.2.2
