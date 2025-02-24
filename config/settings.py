@@ -74,9 +74,20 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ORIGIN_ALLOW_ALL = True
 # 本番環境では、CORS_ALLOWED_ORIGINSを指定する
 # CORS_ALLOWED_ORIGINS = []
+
+# フロントエンドのオリジンを指定
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Reactのフロントエンド
+]
+
+# 認証情報を含むリクエストを許可
+CORS_ALLOW_CREDENTIALS = True
+
+# Cookieを利用する場合、セッションのドメインを設定
+CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 
 ROOT_URLCONF = 'config.urls'
 
@@ -170,23 +181,37 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     # JWT認証
+    # "DEFAULT_AUTHENTICATION_CLASSES": [
+    #     "rest_framework_simplejwt.authentication.JWTAuthentication",
+    # ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'app.authentication.CustomJWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     # 日付
     "DATETIME_FORMAT": "%Y/%m/%d %H:%M",
 }
 
 # JWT設定
+# ✅ JWT 設定
 SIMPLE_JWT = {
-    # アクセストークン(1日)
+    "AUTH_COOKIE": "access",
+    "AUTH_COOKIE_REFRESH": "refresh",
+    'AUTH_COOKIE_DOMAIN': None,
+    "AUTH_COOKIE_SECURE": True,  # 本番環境では `True` にする
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_PATH": "/",
+    "AUTH_COOKIE_SAMESITE": "Lax",  # `Strict` にするとサードパーティでは送られない
+
+    "AUTH_HEADER_TYPES": ("JWT",), 
+    #　TODO Bearerについて後で調べる
+    # "AUTH_HEADER_TYPES": ("Bearer",),　
+    'AUTH_TOKEN_CLASSES': (
+        'rest_framework_simplejwt.tokens.AccessToken',
+    ),
+    # トークンの有効期限
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    # リフレッシュトークン(5日)
     "REFRESH_TOKEN_LIFETIME": timedelta(days=5),
-    # 認証タイプ
-    "AUTH_HEADER_TYPES": ("JWT",),
-    # 認証トークン
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
 }
 
 # Djoser設定
