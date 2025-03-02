@@ -3,13 +3,11 @@ import datetime
 from rest_framework.generics import RetrieveAPIView
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
-from .models import User, Vdot
-from .serializers import UserSerializer, VdotSerializer
+from .models import User
+from .serializers import UserSerializer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
-# from django.contrib.auth import authenticate
-# from app.authentication import set_cookie_tokens
 from rest_framework.views import APIView
 from django.conf import settings
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
@@ -132,26 +130,6 @@ class RefreshTokenView(APIView):
         except TokenError as e:
             return Response({"detail": "Invalid refresh token."}, status=status.HTTP_400_BAD_REQUEST)
 
-# class CustomTokenObtainPairView(TokenObtainPairView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = authenticate(username=request.data["email"], password=request.data["password"])
-#         if user is None:
-#             return Response({"detail": "認証に失敗しました"}, status=status.HTTP_401_UNAUTHORIZED)
-        
-#         response = Response(serializer.validated_data, status=status.HTTP_200_OK)
-#         set_cookie_tokens(response, user)  # Cookie に保存
-#         return response
-
-
-# class LogoutView(APIView):
-#     def post(self, request):
-#         response = Response({"message": "ログアウトしました"}, status=status.HTTP_200_OK)
-#         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
-#         response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE_REFRESH"])
-#         return response
-
 
 class UserViewSet(viewsets.ModelViewSet):
     """ユーザー情報の取得・編集・削除を行うビュー"""
@@ -165,10 +143,3 @@ class UserDetailView(RetrieveAPIView):
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
     lookup_field = 'uuid'
-
-
-class VdotViewSet(viewsets.ModelViewSet):
-    """Vdotのデータを取得・登録・更新・削除するビュー"""
-    queryset = Vdot.objects.all()
-    serializer_class = VdotSerializer
-    permission_classes = [AllowAny]  # 認証不要で全員アクセス可能（後で変更可能）

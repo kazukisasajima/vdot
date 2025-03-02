@@ -59,7 +59,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Vdot(models.Model):
-    """Vdotの計算に関する情報を格納するモデル"""
     user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="vdots")
     distance_value = models.FloatField("距離", null=False)
     distance_unit = models.CharField("距離単位", max_length=5, choices=DISTANCE_UNITS_CHOICES, null=False)
