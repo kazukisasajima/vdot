@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 
     # アプリケーション
     'app.accounts',
+    'app.specialty_event',
 ]
 
 MIDDLEWARE = [

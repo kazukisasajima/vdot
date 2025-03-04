@@ -1,0 +1,26 @@
+# Python 関連
+__pycache__/
+*.py[cod]
+*.swp
+*.swo
+*.egg-info/
+*.log
+*.sqlite3
+
+# Django 関連
+db.sqlite3
+/media/
+*.pot
+*.pyc
+venv/
+.env
+*.DS_Store
+
+# Docker 関連
+*.log
+docker-compose.override.yml
+*.pid
+
+# VSCode 設定（開発環境による）
+.vscode/
+.idea/
